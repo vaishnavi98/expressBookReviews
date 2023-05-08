@@ -4,42 +4,79 @@ let isValid = require("./auth_users.js").isValid;
 let users = require("./auth_users.js").users;
 const public_users = express.Router();
 
-let myPromise1 = new Promise((resolve,reject) => {
-    setTimeout(() => {
-      resolve(JSON.stringify(books))
-    },6000)})
-
-myPromise1.then((successMessage) => {
-        console.log("From Callback list of books:" + successMessage)
-      })
-
-let myPromise2 = new Promise((resolve,reject) => {
-        setTimeout(() => {
-        let isbn = 1;
-          resolve(JSON.stringify(books[isbn]))
-        },6000)})
+// Get all books based on title
+public_users.get('/title/:title',function (req, res) {
+    //Write your code here
+    let booksbytitle = [];
+    let isbns = Object.keys(books);
+    isbns.forEach((isbn) => {
+      if(books[isbn]["title"] === req.params.title) {
+        booksbytitle.push({"isbn":isbn,
+                            "author":books[isbn]["author"],
+                            "reviews":books[isbn]["reviews"]});
+      }
+    });
+    res.send(JSON.stringify(booksbytitle, null, 4));
+  });
+  
+  //  Get book review
+  public_users.get('/review/:isbn',function (req, res) {
+    const isbn = req.params.isbn;
+    res.send(books[isbn]["reviews"]);
     
-myPromise2.then((successMessage) => {
-            console.log("From Callback book details based on ISBN:" + successMessage)
-          })
-let myPromise3 = new Promise((resolve,reject) => {
-            setTimeout(() => {
-            let isbn = 3;
-            resolve(JSON.stringify(books[isbn].author))
-            },6000)})
-        
-myPromise3.then((successMessage) => {
-                console.log("From Callback book details based on author:" + successMessage)
-              })
-let myPromise4 = new Promise((resolve,reject) => {
-            setTimeout(() => {
-            let isbn = 3;
-            resolve(JSON.stringify(books[isbn].title))
-            },6000)})
-        
-    myPromise4.then((successMessage) => {
-                console.log("From Callback book details based on title:" + successMessage)
-              })          
+  });
+  public_users.get('/books',function (req, res) {
+  
+      const get_books = new Promise((resolve, reject) => {
+          resolve(res.send(JSON.stringify({books}, null, 4)));
+        });
+  
+        get_books.then(() => console.log(" Resolving Promise for Task 10"));
+  
+    });
+    public_users.get('/books/isbn/:isbn',function (req, res) {
+      //Write your code here
+      const isbn = req.params.isbn;
+      const get_books = new Promise((resolve, reject) => {
+          resolve(res.send(books[isbn]));
+        });
+  
+        get_books.then(() => console.log("Resolving Promise for Task 11"));
+     });
+     public_users.get('/books/author/:author',function (req, res) {
+      //Write your code here  
+      let booksbyauthor = [];
+      let isbns = Object.keys(books);
+      const get_books = new Promise((resolve, reject) => {
+          resolve(isbns.forEach((isbn) => {
+            if(books[isbn]["author"] === req.params.author) {
+              booksbyauthor.push({"isbn":isbn,
+                                  "title":books[isbn]["title"],
+                                  "reviews":books[isbn]["reviews"]});
+            }
+          }));
+        });
+        const output = new Promise((resolve, reject) =>{resolve(res.send(JSON.stringify(booksbyauthor, null, 4)))});
+        get_books.then(()=>console.log("Result of Task 12"));
+        output.then(()=>console.log("Resolving Promise for Task 12"));
+    });
+    public_users.get('/books/title/:title',function (req, res) {
+      //Write your code here
+      let booksbytitle = [];
+      let isbns = Object.keys(books);
+      const get_books = new Promise((resolve, reject) => {
+          resolve(isbns.forEach((isbn) => {
+            if(books[isbn]["title"] === req.params.title) {
+              booksbytitle.push({"isbn":isbn,
+                                  "author":books[isbn]["author"],
+                                  "reviews":books[isbn]["reviews"]});
+            }
+          }));
+        });
+        const output = new Promise((resolve, reject) =>{resolve(res.send(JSON.stringify(booksbytitle, null, 4)))});
+        get_books.then(()=>console.log("Result of Task 13"));
+        output.then(()=>console.log("Resolving Promise for Task 13"));
+    });        
 const doesExist = (username)=>{
     let userswithsamename = users.filter((user)=>{
       return user.username === username
